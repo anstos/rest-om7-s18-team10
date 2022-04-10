@@ -20,6 +20,6 @@ urlpatterns = [
     # path('admin/', admin.site.urls),
     path('books', include('book.urls')),
     path('authors', include('author.urls')),
-    # path('auth/', include('authentication.urls')),
+    path('users', include('authentication.urls')),
     # path('order/', include('order.urls')),
 ]

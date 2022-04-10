@@ -20,7 +20,7 @@ class Book(models.Model):
 
     name = models.CharField(blank=True, max_length=128)
     description = models.TextField(blank=True)
-    count = models.IntegerField(default=100)
+    count = models.IntegerField(default=10)
     authors = models.ManyToManyField(Author, related_name='books')
 
     def __str__(self):
@@ -36,6 +36,7 @@ class Book(models.Model):
         :return: class, id
         """
         return f'{self.__class__.__name__}(id={self.id})'
+
 
     @staticmethod
     def get_by_id(book_id):

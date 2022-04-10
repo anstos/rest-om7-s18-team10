@@ -1,8 +1,7 @@
 from django.urls import path
-
-from authentication.views import CustomUserCreationView, CustomUserUpdateView
+from authentication import views
 
 urlpatterns = [
-    path('create/', CustomUserCreationView.as_view(), name="create_user"),
-    path('update/<int:pk>/', CustomUserUpdateView.as_view(), name="update_user"),
+    path('/', views.user_list),
+    path('/<int:pk>/', views.user_detail),
 ]

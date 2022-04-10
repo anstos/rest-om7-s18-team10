@@ -141,3 +141,4 @@ class Author(models.Model):
         """
         all_users = Author.objects.all()
         return all_users
+

@@ -1,43 +1,48 @@
-from django.views import generic
-from django.shortcuts import render, redirect, get_object_or_404
-
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from author.models import Author
-from .forms import AuthorCreationForm
+from author.serializers import AuthorSerializer
 
 
-class AuthorListView(generic.ListView):
+@api_view(['GET', 'POST'])
+def author_list(request):
+    """
+    View a list of all authors, or create a new author.
+    """
+    if request.method == 'GET':
+        authors = Author.objects.all()
+        serializer = AuthorSerializer(authors, many=True)
+        return Response(serializer.data)
 
-    model = Author
-    context_object_name = "authors"
-    template_name = 'author/list.html'
+    elif request.method == 'POST':
+        serializer = AuthorSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+@api_view(['GET', 'PUT', 'DELETE'])
+def author_detail(request, pk):
+    """
+    Retrieve, update or delete an author.
+    """
+    try:
+        author = Author.objects.get(pk=pk)
+    except Author.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
-class AuthorDetailView(generic.DetailView):
+    if request.method == 'GET':
+        serializer = AuthorSerializer(author)
+        return Response(serializer.data)
 
-    model = Author
-    context_object_name = "author"
-    template_name = 'author/detail.html'
+    elif request.method == 'PUT':
+        serializer = AuthorSerializer(author, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-def create_author(request):
-    if request.method == "POST":
-        form = AuthorCreationForm(request.POST)
-        if form.is_valid():
-            post = form.save()
-            return redirect('author_detail', pk=post.pk)
-    else:
-        form = AuthorCreationForm()
-
-    return render(request, 'author/create_author.html', {'form': form})
-
-
-def edit_author(request, pk):
-    author = get_object_or_404(Author, pk=pk)
-    if request.method == "POST":
-        form = AuthorCreationForm(request.POST, instance=author)
-        if form.is_valid():
-            author = form.save()
-            return redirect('author_detail', pk=author.pk)
-    else:
-        form = AuthorCreationForm(instance=author)
-    return render(request, 'author/edit_author.html', {'form': form, 'pk': pk})
+    elif request.method == 'DELETE':
+        author.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

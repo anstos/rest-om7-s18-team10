@@ -20,7 +20,7 @@ class Book(models.Model):
 
     name = models.CharField(blank=True, max_length=128)
     description = models.TextField(blank=True)
-    count = models.IntegerField(default=10)
+    count = models.IntegerField(default=100)
     authors = models.ManyToManyField(Author, related_name='books')
 
     def __str__(self):
